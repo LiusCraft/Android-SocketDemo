@@ -9,6 +9,7 @@
         android:layout_weight="1"
         android:orientation="vertical">
         <ScrollView
+            android:id="@+id/sv_lt"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
             <TextView

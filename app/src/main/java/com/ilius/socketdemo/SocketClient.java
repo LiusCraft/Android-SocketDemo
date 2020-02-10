@@ -10,14 +10,16 @@ import java.net.SocketAddress;
 
 public class SocketClient implements Runnable{
     private Socket socket;
-    private SocketAddress socketAddress;
+    private String host;
+    private int port;
     private PrintWriter pw;
     private Message message;
     private android.os.Handler handler;
 
     public SocketClient(String host, int port, android.os.Handler handler){
         this.handler = handler; // MainActivity 的 handler
-        socketAddress = new InetSocketAddress(host,port); // 连接的地址+端口
+        this.host = host;
+        this.port = port;
         this.socket = new Socket();
     }
 
@@ -27,6 +29,7 @@ public class SocketClient implements Runnable{
             while (--resetCount>0){ // 这里给3次重连机会(在连接条件成立下)
                 try {
                     // 给个连接延时(3000后还在连接则判断连接失败！)
+                    SocketAddress socketAddress = new InetSocketAddress(host,port); // 连接的地址+端口
                     socket.connect(socketAddress,3000);
                     pw = new PrintWriter(new OutputStreamWriter(socket.getOutputStream(),"UTF-8"),true);
                     resetCount = 4; // 连接成功了就再给3次重连机会
@@ -73,13 +76,12 @@ public class SocketClient implements Runnable{
                     break;
                 }
             }
+            return false;
         }catch(Exception e){
-
             message = new Message();
             message.what = -1;
             message.obj = "服务器已断开...正在尝试重连";
             handler.sendMessage(message);
-
         }
         return false;
     }

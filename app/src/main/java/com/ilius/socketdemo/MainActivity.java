@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ScrollView;
 import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,6 +24,7 @@ public class MainActivity extends AppCompatActivity {
     private Button btn_send;
     private EditText et_message;
     private TextView tv_message;
+    private ScrollView sv_lt;
     private String nickName;
     private SocketClient socketClient;
 
@@ -37,6 +39,10 @@ public class MainActivity extends AppCompatActivity {
             switch (msg.what) {
                 case 1: // 聊天消息
                     tv_message.append(msg.obj.toString());
+                    int offset=tv_message.getLineCount()*tv_message.getLineHeight();//判断textview文本的高度
+                    if (offset > sv_lt.getHeight()) {
+                        sv_lt.scrollTo(0,offset - sv_lt.getHeight());//如果文本的高度大于ScrollView,就自动滑动
+                    }
                     break;
                 case 2: // 连接服务端成功，设置聊天昵称
                     setNickName();
@@ -58,7 +64,7 @@ public class MainActivity extends AppCompatActivity {
         setViewModule(); // 设置视图的组件
         setListener(); // 设置设置监听事件
         // 给socket信息与启动socket线程
-        socketClient = new SocketClient("192.168.1.5", 19730, handler);
+        socketClient = new SocketClient("cn-zj-dx-3.sakurafrp.com",36638, handler);
         Thread thread = new Thread(socketClient);
         thread.start();
     }
@@ -67,6 +73,7 @@ public class MainActivity extends AppCompatActivity {
         btn_send = findViewById(R.id.btn_send);
         et_message = findViewById(R.id.et_message);
         tv_message = findViewById(R.id.tv_message);
+        sv_lt = findViewById(R.id.sv_lt);
     }
 
     private void setListener() {
